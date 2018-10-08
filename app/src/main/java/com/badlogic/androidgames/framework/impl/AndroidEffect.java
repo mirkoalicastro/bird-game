@@ -7,6 +7,5 @@ import android.graphics.Shader;
 import com.badlogic.androidgames.framework.Effect;
 
 public abstract class AndroidEffect implements Effect {
-    protected Shader shader;
-    abstract void apply(Canvas canvas, Paint paint, int x, int y, int width, int height);
+   abstract void apply(Canvas canvas, Paint paint, int x, int y, int width, int height);
 }

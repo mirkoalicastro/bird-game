@@ -6,6 +6,6 @@ import com.badlogic.androidgames.framework.impl.AndroidGame;
 public class AngryWhatGame extends AndroidGame {
     @Override
     public Screen getStartScreen() {
-        return new OneScreen(this);
+        return new StartScreen(this);
     }
 }

@@ -1,32 +1,28 @@
 package com.badlogic.androidgames.framework.impl;
 
-import com.badlogic.androidgames.framework.OneJobScreen;
+import com.badlogic.androidgames.framework.Game;
+import com.badlogic.androidgames.framework.Screen;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-public abstract class AndroidLoadingScreen extends OneJobScreen {
-    protected final AndroidGame androidGame;
-
+public abstract class LoadingScreen extends Screen {
     private volatile int progressValue;
     private final Queue<Integer> animations;
     private final GradualProgress thread;
-
-    public abstract void doJob();
     private final int delta;
 
-    public AndroidLoadingScreen(AndroidGame androidGame) {
-        this(androidGame, 5);
+    public LoadingScreen(Game game) {
+        this(game, 5);
     }
 
     /**
      *
-     * @param androidGame the android game instance
-     * @param delta how much it has to increase the percentage in order to reach the desidered value (Default: 2)
+     * @param game the game instance
+     * @param delta how much it has to increase the percentage in order to reach the desired value (Default: 2)
      */
-    public AndroidLoadingScreen(AndroidGame androidGame, int delta) {
-        super(androidGame);
-        this.androidGame = androidGame;
+    public LoadingScreen(Game game, int delta) {
+        super(game);
         this.delta = delta;
         progressValue = 0;
         animations = new LinkedList<>();
@@ -45,8 +41,11 @@ public abstract class AndroidLoadingScreen extends OneJobScreen {
         return progressValue;
     }
 
+    @Override
+    public final void present(float deltaTime) { }
+
     /**
-     * If AngryWhatGame class wants to override dispose method, it must first call 'super.dispose()'
+     * If a class wants to override dispose method, it must first call 'super.dispose()'
      */
     public void dispose() {
         synchronized (animations) {
