@@ -30,7 +30,7 @@ public abstract class LoadingScreen extends Screen {
         thread.start();
     }
 
-    public void setProgress(final int progress) {
+    protected void setProgress(int progress) {
         synchronized (animations) {
             animations.add(progress);
             animations.notifyAll();

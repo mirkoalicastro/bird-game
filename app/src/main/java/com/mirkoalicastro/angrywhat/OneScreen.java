@@ -8,7 +8,7 @@ import com.google.fpl.liquidfun.World;
 
 public class OneScreen extends Screen {
     private final World world;
-    public OneScreen(Game game) {
+    OneScreen(Game game) {
         super(game);
         world = new World(0, 9.8f);
 

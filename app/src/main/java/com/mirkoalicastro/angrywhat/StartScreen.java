@@ -13,7 +13,7 @@ import com.badlogic.androidgames.framework.impl.RectangularAndroidTileEffect;
 
 public class StartScreen extends LoadingScreen {
 
-    public StartScreen(Game game) {
+    StartScreen(Game game) {
         super(game);
     }
 

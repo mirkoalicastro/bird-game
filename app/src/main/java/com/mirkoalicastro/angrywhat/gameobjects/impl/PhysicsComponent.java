@@ -5,8 +5,8 @@ import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
 
 public class PhysicsComponent {
-    protected Body body;
-    protected World world;
+    private Body body;
+    private World world;
     private final Vec2 v = new Vec2();
 
     private float width, height;

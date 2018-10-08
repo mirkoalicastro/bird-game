@@ -1,11 +1,14 @@
 package com.badlogic.androidgames.framework.impl;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
+
 import com.badlogic.androidgames.framework.Effect;
 
-public class ComposerEffect implements Effect {
-    private final Effect[] effects;
+public class ComposerEffect extends AndroidEffect {
+    private final AndroidEffect[] effects;
     private final int lengthFixed;
-    public ComposerEffect(Effect[] effects) {
+    public ComposerEffect(AndroidEffect[] effects) {
         this.effects = effects;
         if(effects == null)
             lengthFixed = 0;
@@ -14,8 +17,8 @@ public class ComposerEffect implements Effect {
     }
 
     @Override
-    public void apply(int x, int y, int width, int height) {
+    public void apply(Canvas canvas, Paint paint, int x, int y, int width, int height) {
         for(int i=0; i<lengthFixed; i++)
-            effects[i].apply(x, y, width, height);
+            effects[i].apply(canvas, paint, x, y, width, height);
     }
 }

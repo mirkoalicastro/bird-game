@@ -6,7 +6,7 @@ import android.graphics.RadialGradient;
 import android.graphics.Shader;
 
 public class RadialGradientEffect extends AndroidEffect {
-    protected Shader shader;
+    protected final Shader shader;
 
     public RadialGradientEffect(float centerX, float centerY, float radius, int[] colors, float[] stops, Shader.TileMode tileMode) {
         shader = new RadialGradient(centerX, centerY, radius, colors, stops, tileMode);

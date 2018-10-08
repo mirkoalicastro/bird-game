@@ -29,7 +29,7 @@ public class CircleDrawableComponent extends DrawableComponent {
         return setRadius(height/2);
     }
 
-    DrawableComponent setRadius(int radius) {
+    private DrawableComponent setRadius(int radius) {
         this.radius = radius;
         width = radius*2;
         height = radius*2;
