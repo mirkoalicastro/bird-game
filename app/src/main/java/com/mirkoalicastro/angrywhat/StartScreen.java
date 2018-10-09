@@ -4,12 +4,8 @@ import android.graphics.Color;
 
 import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
-import com.badlogic.androidgames.framework.Graphics.PixmapFormat;
 import com.badlogic.androidgames.framework.impl.AndroidGame;
 import com.badlogic.androidgames.framework.impl.LoadingScreen;
-import com.badlogic.androidgames.framework.impl.AndroidPixmap;
-import com.badlogic.androidgames.framework.impl.CircularAndroidTileEffect;
-import com.badlogic.androidgames.framework.impl.RectangularAndroidTileEffect;
 
 public class StartScreen extends LoadingScreen {
 
@@ -19,6 +15,8 @@ public class StartScreen extends LoadingScreen {
 
     @Override
     public void onProgress(int progress) {
+        if(true)
+            return;
         final Graphics graphics = game.getGraphics();
 
         int x = (graphics.getWidth()-Assets.loading.getWidth())/2;
@@ -34,7 +32,7 @@ public class StartScreen extends LoadingScreen {
     @Override
     public void update(float deltaTime) {
         setProgress(100);
-        game.setScreen(new OneScreen(game));
+        game.setScreen(new GameScreen(game));
     }
 
     @Override

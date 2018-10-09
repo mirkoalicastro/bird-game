@@ -12,10 +12,13 @@ public class Entity {
     }
     public Entity addComponent(Component component) {
         features.put(component.type(), component);
+        component.setEntity(this);
         return this;
     }
     public Entity removeComponent(Component.Type type) {
-        features.remove(type);
+        Component comp = features.remove(type);
+        if(comp != null)
+            comp.setEntity(null);
         return this;
     }
     public Component getComponent(Component.Type type) {
