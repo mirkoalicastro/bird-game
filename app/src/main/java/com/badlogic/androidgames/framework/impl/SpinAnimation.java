@@ -8,23 +8,13 @@ public class SpinAnimation implements Animation {
     private final Graphics graphics;
     private final long delta;
     private Pixmap pixmap;
-    private int x, y;
     private final int numFrames;
 
-    public SpinAnimation(Graphics graphics, int numFrames, long delta) {
+    public SpinAnimation(Graphics graphics, int numFrames, long delta, Pixmap pixmap) {
         this.graphics = graphics;
         this.numFrames = numFrames;
         this.delta = delta;
-    }
-
-    public SpinAnimation setX(int x) {
-        this.x = x;
-        return this;
-    }
-
-    public SpinAnimation setY(int y) {
-        this.y = y;
-        return this;
+        this.pixmap = pixmap;
     }
 
     public SpinAnimation setPixmap(Pixmap pixmap) {
@@ -32,7 +22,8 @@ public class SpinAnimation implements Animation {
         return this;
     }
 
-    public void draw() {
+    @Override
+    public void draw(int x, int y) {
         if(pixmap != null) {
             int currentFrame = (int)((System.currentTimeMillis() / delta) % numFrames);
             float degrees = (360/numFrames)*currentFrame;

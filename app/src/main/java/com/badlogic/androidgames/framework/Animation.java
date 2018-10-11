@@ -1,5 +1,5 @@
 package com.badlogic.androidgames.framework;
 
 public interface Animation {
-    void draw();
+    void draw(int x, int y);
 }

@@ -31,6 +31,8 @@ public class StartScreen extends LoadingScreen {
 
     @Override
     public void update(float deltaTime) {
+        Graphics g = game.getGraphics();
+        Assets.avatar = g.newPixmap("avatar.png", Graphics.PixmapFormat.ARGB8888);
         setProgress(100);
         game.setScreen(new GameScreen(game));
     }

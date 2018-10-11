@@ -8,6 +8,8 @@ import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Input;
 import com.badlogic.androidgames.framework.Screen;
+import com.badlogic.androidgames.framework.impl.AndroidPixmap;
+import com.badlogic.androidgames.framework.impl.RegularSpritesheetAnimation;
 import com.badlogic.androidgames.framework.impl.TimedCircularButton;
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
@@ -24,38 +26,40 @@ import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
 import com.mirkoalicastro.angrywhat.utils.Converter;
 
 public class GameScreen extends Screen {
-    private final static long JUMP_DURATION = 300;
-    private final static long JUMP_RECHARGE = JUMP_DURATION*2;
+    private final static long JUMP_DURATION = 80;
+    private final static long JUMP_RECHARGE = JUMP_DURATION*3;
     private final static int RADIUS_AVATAR = 60;
-    private final static float RELATIVE_X_AVATAR = 0.95f;
-    private final static float RELATIVE_Y_AVATAR = 0.05f;
+    private final static float RELATIVE_X_AVATAR = 0.1f;
+    private final static float RELATIVE_Y_AVATAR = 0.15f;
     private final static int VELOCITY_ITERATIONS = 8;
-    private final static int POSITION_ITERATIONS = 5;
+    private final static int POSITION_ITERATIONS = 2;
     private final static int RADIUS_JUMP_BUTTON = 150;
-    private final static float RELATIVE_X_JUMP_BUTTON = 1f;
-    private final static float RELATIVE_Y_JUMP_BUTTON = 1f;
-    private final static float JUMP_FORCE = 25f;
-    private final static float WORLD_GRAVITY = 5f;
+    private final static float RELATIVE_X_JUMP_BUTTON = 0.85f;
+    private final static float RELATIVE_Y_JUMP_BUTTON = 0.8f;
+    private final static float JUMP_FORCE = 60f;
+    private final static float WORLD_GRAVITY = 2.4f;
     private final GameStatus gameStatus;
     private final BodyDef bodyDef = new BodyDef();
     private final FixtureDef fixtureDef = new FixtureDef();
     private final Graphics graphics;
     private final TimedCircularButton jumpButton;
     private long jumpUntil;
+    private final RegularSpritesheetAnimation tmpAnimation;
     GameScreen(Game game) {
         super(game);
         graphics = game.getGraphics();
         Converter.setScale(graphics.getWidth(), graphics.getHeight());
-        int jumpX = (int)(graphics.getWidth()*RELATIVE_X_JUMP_BUTTON + RADIUS_JUMP_BUTTON);
-        int jumpY = (int)(graphics.getHeight()*RELATIVE_Y_JUMP_BUTTON + RADIUS_JUMP_BUTTON);
-        jumpButton = new TimedCircularButton(graphics, jumpX, jumpY, RADIUS_JUMP_BUTTON, JUMP_RECHARGE);
+        int jumpX = (int)(graphics.getWidth()*RELATIVE_X_JUMP_BUTTON);
+        int jumpY = (int)(graphics.getHeight()*RELATIVE_Y_JUMP_BUTTON);
+        //TODO fix x,y
+        jumpButton = new TimedCircularButton(graphics, jumpX,jumpY, RADIUS_JUMP_BUTTON, JUMP_RECHARGE);
                 jumpButton.setSecondaryColor(Color.RED)//.setSecondaryPixmap(Assets.swordsWhite)
                 .setColor(Color.GREEN)//.setPixmap(Assets.swordsBlack)
                 .setStroke(15, Color.BLACK);
 
         int avatarX = (int)(graphics.getWidth()*RELATIVE_X_AVATAR);
         int avatarY = (int)(graphics.getHeight()*RELATIVE_Y_AVATAR);
-        World world = new World(-WORLD_GRAVITY, 0);
+        World world = new World(0, WORLD_GRAVITY);
         Entity avatar = new Entity();
         Component avatarDrawable = new CircleDrawableComponent(graphics).setRadius(RADIUS_AVATAR)
                 .setPixmap(null).setColor(Color.RED).setX(avatarX).setY(avatarY);
@@ -86,6 +90,7 @@ public class GameScreen extends Screen {
         avatar.addComponent(avatarPhysics);
 
         this.gameStatus = new GameStatus(world, avatar);
+        tmpAnimation = new RegularSpritesheetAnimation(graphics, (AndroidPixmap)Assets.avatar,39,39,500);
     }
 
     @Override
@@ -102,14 +107,15 @@ public class GameScreen extends Screen {
             }
         }
         if (jump) {
+            if(System.currentTimeMillis() > jumpUntil)
+                stopEntity(gameStatus.getAvatar());
             jumpUntil = System.currentTimeMillis() + JUMP_DURATION;
-            stopEntity(gameStatus.getAvatar());
         }
         if (System.currentTimeMillis() <= jumpUntil) {
             Log.d("PROVA", "salto");
             jumpEntity(gameStatus.getAvatar());
         } else if(jumpUntil != 0) {
-            stopEntity(gameStatus.getAvatar());
+//            stopEntity(gameStatus.getAvatar());
             jumpUntil = 0;
         }
         gameStatus.getWorld().step(deltaTime, VELOCITY_ITERATIONS, POSITION_ITERATIONS, 0);
@@ -122,6 +128,7 @@ public class GameScreen extends Screen {
         DrawableComponent avatarDrawable = (DrawableComponent) gameStatus.getAvatar().getComponent(Component.Type.Drawable);
         avatarDrawable.draw();
         jumpButton.draw();
+        tmpAnimation.draw(100,100);
     }
 
     @Override
@@ -155,7 +162,7 @@ public class GameScreen extends Screen {
         PhysicsComponent physicsComponent = (PhysicsComponent) entity.getComponent(Component.Type.Phyisics);
         if (physicsComponent == null)
             throw new IllegalArgumentException("Entity has not any physics component");
-        physicsComponent.applyForce(JUMP_FORCE,0);
+        physicsComponent.applyForce(0,-JUMP_FORCE);
     }
 
     private void updateEntityPosition(Entity entity) {
