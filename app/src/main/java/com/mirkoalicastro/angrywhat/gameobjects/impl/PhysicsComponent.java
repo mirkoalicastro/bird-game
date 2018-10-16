@@ -12,9 +12,22 @@ public class PhysicsComponent extends Component {
 
     private float width, height;
 
+    public float getXVelocity() {
+        return body.getLinearVelocity().getX();
+    }
+
+    public float getYVelocity() {
+        return body.getLinearVelocity().getY();
+    }
+
     public void applyForce(float x, float y) {
         v.set(x, y);
         body.applyForceToCenter(v,true);
+    }
+
+    public void applyLinearVelocity(float x, float y) {
+        v.set(x, y);
+        body.setLinearVelocity(v);
     }
 
     public float getX(){
@@ -61,7 +74,14 @@ public class PhysicsComponent extends Component {
     }
 
     public void stop() {
-        v.set(0,0);
-        body.setLinearVelocity(v);
+        applyLinearVelocity(0,0);
+    }
+
+    public void stopX() {
+        applyLinearVelocity(0, body.getLinearVelocity().getY());
+    }
+
+    public void stopY() {
+        applyLinearVelocity(body.getLinearVelocity().getX(), 0);
     }
 }
