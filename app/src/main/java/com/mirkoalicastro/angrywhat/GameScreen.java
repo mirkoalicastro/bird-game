@@ -2,13 +2,17 @@ package com.mirkoalicastro.angrywhat;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Shader;
 import android.util.Log;
 
+import com.badlogic.androidgames.framework.Effect;
 import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Input;
 import com.badlogic.androidgames.framework.Screen;
+import com.badlogic.androidgames.framework.impl.AndroidEffect;
 import com.badlogic.androidgames.framework.impl.AndroidPixmap;
+import com.badlogic.androidgames.framework.impl.RectangularLinearGradientEffect;
 import com.badlogic.androidgames.framework.impl.RegularSpritesheetAnimation;
 import com.badlogic.androidgames.framework.impl.TimedCircularButton;
 import com.google.fpl.liquidfun.Body;
@@ -35,14 +39,16 @@ public class GameScreen extends Screen {
     private final FixtureDef fixtureDef = new FixtureDef();
     private final Graphics graphics;
     private final TimedCircularButton jumpButton;
-    private long jumpUntil;
     private final RegularSpritesheetAnimation tmpAnimation;
     private final Camera camera;
     private final GameLevel level;
+    private final Effect backgroundEffect;
+    private long jumpUntil;
 
     GameScreen(Game game) {
         super(game);
         graphics = game.getGraphics();
+        backgroundEffect = new RectangularLinearGradientEffect(0,0, 0, graphics.getHeight(), new int[]{BACKGROUND_TOP_COLOR, BACKGROUND_BOTTOM_COLOR}, new float[]{0,1}, Shader.TileMode.REPEAT);
         Converter.setScale(graphics.getWidth(), graphics.getHeight());
         //TODO fix x,y
         jumpButton = new TimedCircularButton(graphics, (int)(graphics.getWidth()*RELATIVE_X_JUMP_BUTTON), (int)(graphics.getHeight()*RELATIVE_Y_JUMP_BUTTON), RADIUS_JUMP_BUTTON, JUMP_RECHARGE);
@@ -53,9 +59,10 @@ public class GameScreen extends Screen {
 
         World world = new World(0, WORLD_GRAVITY);
         Entity avatar = createAvatar(world, (int)(graphics.getWidth()*RELATIVE_X_AVATAR), (int)(graphics.getHeight()*RELATIVE_Y_AVATAR));
+        Entity cameraman = createCameraman(world, (int)(graphics.getWidth()*RELATIVE_X_AVATAR), -50);
         gameStatus = new GameStatus(world, avatar);
         tmpAnimation = new RegularSpritesheetAnimation(graphics, (AndroidPixmap)Assets.avatar,39,39,500);
-        camera = new ScrollingAbscissaCamera(avatar, graphics.getWidth(), graphics.getHeight());
+        camera = new ScrollingAbscissaCamera(cameraman, graphics.getWidth(), graphics.getHeight());
         level = new GameLevel(world, graphics);
     }
 
@@ -81,18 +88,22 @@ public class GameScreen extends Screen {
             }
             jumpUntil = System.currentTimeMillis() + JUMP_DURATION;
         }
-        if (System.currentTimeMillis() <= jumpUntil) {
+        if (System.currentTimeMillis() <= jumpUntil)
             jumpEntity(gameStatus.getAvatar());
-        }
+
+        PhysicsComponent physicsComponent = (PhysicsComponent) gameStatus.getAvatar().getComponent(Component.Type.Phyisics);
+        int absoluteAvatarX = (int)Converter.physicsToFrame(physicsComponent.getX());
+
         gameStatus.getWorld().step(deltaTime, VELOCITY_ITERATIONS, POSITION_ITERATIONS, 0);
         camera.step();
+        level.step(absoluteAvatarX);
         updateEntityPosition(gameStatus.getAvatar());
         Iterator<Entity> iterator = level.getObstacles().iterator();
         while(iterator.hasNext()) {
             Entity obs = iterator.next();
             updateEntityPosition(obs);
             DrawableComponent drawableComponent = (DrawableComponent) obs.getComponent(Component.Type.Drawable);
-            if(drawableComponent.getX() < drawableComponent.getWidth()) {
+            if(drawableComponent.getX() < -drawableComponent.getWidth()) {
                 iterator.remove();
                 Log.d("PROVA", "rimosso");
             }
@@ -101,7 +112,7 @@ public class GameScreen extends Screen {
 
     @Override
     public void present(float deltaTime) {
-        graphics.clear(Color.BLACK);
+        graphics.drawEffect(backgroundEffect,0,0,graphics.getWidth(), graphics.getHeight());
         DrawableComponent avatarDrawable = (DrawableComponent) gameStatus.getAvatar().getComponent(Component.Type.Drawable);
         avatarDrawable.draw();
         jumpButton.draw();
@@ -124,7 +135,8 @@ public class GameScreen extends Screen {
 
     @Override
     public void dispose() {
-
+        level.dispose();
+        gameStatus.dispose();
     }
 
     @Override
@@ -158,13 +170,44 @@ public class GameScreen extends Screen {
         drawableComponent.setY((int)Converter.physicsToFrame(camera.calculateY(physicsComponent.getY())));
     }
 
-    private Entity createAvatar(World world, int avatarX, int avatarY) {
+    private Entity createCameraman(World world, int x, int y) {
+        Entity cameraman = new Entity();
+
+        bodyDef.setPosition(Converter.frameToPhysics(x),Converter.frameToPhysics(y));
+        bodyDef.setType(BodyType.dynamicBody);
+
+        Body cameramanBody = world.createBody(bodyDef);
+
+        cameramanBody.setSleepingAllowed(false);
+        cameramanBody.setUserData(cameraman);
+        cameramanBody.setAwake(true);
+
+        Shape cameramanShape = new CircleShape();
+        Log.d("CAMERAMAN", Converter.frameToPhysics(1) + "");
+        cameramanShape.setRadius(Converter.frameToPhysics(1));
+
+        fixtureDef.setDensity(1);
+        fixtureDef.setShape(cameramanShape);
+
+        cameramanBody.createFixture(fixtureDef);
+
+        PhysicsComponent cameramanPhysics = new PhysicsComponent(cameramanBody);
+
+        cameramanPhysics.applyLinearVelocity(WORLD_PROGRESS, 0);
+
+        cameraman.addComponent(cameramanPhysics);
+
+        return cameraman;
+
+    }
+
+    private Entity createAvatar(World world, int x, int y) {
         Entity avatar = new Entity();
         Component avatarDrawable = new CircleDrawableComponent(graphics).setRadius(RADIUS_AVATAR)
-                .setPixmap(null).setColor(Color.RED).setX(avatarX).setY(avatarY);
+                .setPixmap(null).setColor(Color.RED).setX(x).setY(y);
         avatar.addComponent(avatarDrawable);
 
-        bodyDef.setPosition(Converter.frameToPhysics(avatarX),Converter.frameToPhysics(avatarY));
+        bodyDef.setPosition(Converter.frameToPhysics(x),Converter.frameToPhysics(y));
         bodyDef.setType(BodyType.dynamicBody);
 
         Body avatarBody = world.createBody(bodyDef);
@@ -206,5 +249,7 @@ public class GameScreen extends Screen {
     private final static float JUMP_FORCE = 2.3f;
     private final static float WORLD_GRAVITY = 2.3f;
     private final static float WORLD_PROGRESS = 1.5f;
+    private final static int BACKGROUND_TOP_COLOR = Color.parseColor("#E8FFFF");
+    private final static int BACKGROUND_BOTTOM_COLOR = Color.parseColor("#A8D5F4");
 
 }
