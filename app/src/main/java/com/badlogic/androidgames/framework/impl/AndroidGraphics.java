@@ -126,7 +126,7 @@ public class AndroidGraphics implements Graphics {
     public void drawRect(int x, int y, int width, int height, int color) {
         paint.setColor(color);
         paint.setStyle(Style.FILL);
-        canvas.drawRect(x, y, x + width - 1, y + height - 1, paint);
+        canvas.drawRect(x, y, x + width, y + height, paint);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class AndroidGraphics implements Graphics {
         paint.setColor(color);
         paint.setStyle(Style.STROKE);
         paint.setStrokeWidth(strokeWidth);
-        canvas.drawRect(x, y, x + width - 1, y + height - 1, paint);
+        canvas.drawRect(x, y, x + width, y + height, paint);
     }
 
 
@@ -142,13 +142,13 @@ public class AndroidGraphics implements Graphics {
     public void drawPixmap(Pixmap pixmap, int dstX, int dstY, int dstWidth, int dstHeight, int srcX, int srcY, int srcWidth, int srcHeight) {
         srcRect.left = srcX;
         srcRect.top = srcY;
-        srcRect.right = srcX + srcWidth - 1;
-        srcRect.bottom = srcY + srcHeight - 1;
+        srcRect.right = srcX + srcWidth;
+        srcRect.bottom = srcY + srcHeight;
 
         dstRect.left = dstX;
         dstRect.top = dstY;
-        dstRect.right = dstX + dstWidth - 1;
-        dstRect.bottom = dstY + dstHeight - 1;
+        dstRect.right = dstX + dstWidth;
+        dstRect.bottom = dstY + dstHeight;
 
         canvas.drawBitmap(((AndroidPixmap) pixmap).bitmap, srcRect, dstRect,null);
     }

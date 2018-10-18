@@ -1,13 +1,9 @@
 package com.mirkoalicastro.angrywhat.camera.impl;
 
-import android.util.Log;
-
 import com.mirkoalicastro.angrywhat.camera.Camera;
 import com.mirkoalicastro.angrywhat.gameobjects.Component;
 import com.mirkoalicastro.angrywhat.gameobjects.Entity;
-import com.mirkoalicastro.angrywhat.gameobjects.impl.DrawableComponent;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
-import com.mirkoalicastro.angrywhat.utils.Converter;
 
 public class ScrollingAbscissaCamera extends Camera {
     private final Entity entity;
@@ -28,7 +24,6 @@ public class ScrollingAbscissaCamera extends Camera {
         if (physicsComponent == null)
             throw new IllegalArgumentException("Entity has not any physics component");
         deltaX = x - physicsComponent.getX();
-        Log.d("Camera", "deltaX " + deltaX);
     }
 
     @Override

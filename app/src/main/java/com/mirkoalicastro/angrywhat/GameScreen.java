@@ -10,7 +10,6 @@ import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Input;
 import com.badlogic.androidgames.framework.Screen;
-import com.badlogic.androidgames.framework.impl.AndroidEffect;
 import com.badlogic.androidgames.framework.impl.AndroidPixmap;
 import com.badlogic.androidgames.framework.impl.RectangularLinearGradientEffect;
 import com.badlogic.androidgames.framework.impl.RegularSpritesheetAnimation;
@@ -29,6 +28,7 @@ import com.mirkoalicastro.angrywhat.gameobjects.Entity;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.CircleDrawableComponent;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.DrawableComponent;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
+import com.mirkoalicastro.angrywhat.gameobjects.impl.RectangleDrawableComponent;
 import com.mirkoalicastro.angrywhat.utils.Converter;
 
 import java.util.Iterator;
@@ -41,7 +41,7 @@ public class GameScreen extends Screen {
     private final TimedCircularButton jumpButton;
     private final RegularSpritesheetAnimation tmpAnimation;
     private final Camera camera;
-    private final GameLevel level;
+    private final GameLevel gameLevel;
     private final Effect backgroundEffect;
     private long jumpUntil;
 
@@ -62,8 +62,8 @@ public class GameScreen extends Screen {
         Entity cameraman = createCameraman(world, (int)(graphics.getWidth()*RELATIVE_X_AVATAR), -50);
         gameStatus = new GameStatus(world, avatar);
         tmpAnimation = new RegularSpritesheetAnimation(graphics, (AndroidPixmap)Assets.avatar,39,39,500);
-        camera = new ScrollingAbscissaCamera(cameraman, graphics.getWidth(), graphics.getHeight());
-        level = new GameLevel(world, graphics);
+        camera = new ScrollingAbscissaCamera(avatar, graphics.getWidth(), graphics.getHeight());
+        gameLevel = new GameLevel(world, graphics);
     }
 
     @Override
@@ -81,10 +81,9 @@ public class GameScreen extends Screen {
         }
         if (jump) {
             if(System.currentTimeMillis() > jumpUntil) {
-                Log.d("PROVA", "stoppo");
                 stopGravity(gameStatus.getAvatar());
             } else {
-                Log.d("PROVA", "non stoppo");
+                //nothing only if there is no limit to jump!
             }
             jumpUntil = System.currentTimeMillis() + JUMP_DURATION;
         }
@@ -96,12 +95,12 @@ public class GameScreen extends Screen {
 
         gameStatus.getWorld().step(deltaTime, VELOCITY_ITERATIONS, POSITION_ITERATIONS, 0);
         camera.step();
-        level.step(absoluteAvatarX);
+        gameLevel.step(absoluteAvatarX);
         updateEntityPosition(gameStatus.getAvatar());
-        Iterator<Entity> iterator = level.getObstacles().iterator();
+        Iterator<Entity> iterator = gameLevel.getObstacles().iterator();
         while(iterator.hasNext()) {
             Entity obs = iterator.next();
-            updateEntityPosition(obs);
+            updateEntityPosition(obs, true);
             DrawableComponent drawableComponent = (DrawableComponent) obs.getComponent(Component.Type.Drawable);
             if(drawableComponent.getX() < -drawableComponent.getWidth()) {
                 iterator.remove();
@@ -117,7 +116,7 @@ public class GameScreen extends Screen {
         avatarDrawable.draw();
         jumpButton.draw();
         tmpAnimation.draw(100,100);
-        for(Entity obs: level.getObstacles()) {
+        for(Entity obs: gameLevel.getObstacles()) {
             DrawableComponent obsDrawable = (DrawableComponent) obs.getComponent(Component.Type.Drawable);
             obsDrawable.draw();
         }
@@ -135,7 +134,7 @@ public class GameScreen extends Screen {
 
     @Override
     public void dispose() {
-        level.dispose();
+        gameLevel.dispose();
         gameStatus.dispose();
     }
 
@@ -160,21 +159,32 @@ public class GameScreen extends Screen {
     }
 
     private void updateEntityPosition(Entity entity) {
+        updateEntityPosition(entity, false);
+    }
+
+
+    private void updateEntityPosition(Entity entity, boolean isCentered) {
         PhysicsComponent physicsComponent = (PhysicsComponent) entity.getComponent(Component.Type.Phyisics);
         if (physicsComponent == null)
             throw new IllegalArgumentException("Entity has not any physics component");
         DrawableComponent drawableComponent = (DrawableComponent) entity.getComponent(Component.Type.Drawable);
         if (drawableComponent == null)
             throw new IllegalArgumentException("Entity has not any drawable component");
-        drawableComponent.setX((int)Converter.physicsToFrame(camera.calculateX(physicsComponent.getX())));
-        drawableComponent.setY((int)Converter.physicsToFrame(camera.calculateY(physicsComponent.getY())));
+        float x = physicsComponent.getX();
+        float y = physicsComponent.getY();
+        if(isCentered) {
+            x -= physicsComponent.getWidth()/2;
+            y -= physicsComponent.getHeight()/2;
+        }
+        drawableComponent.setX((int)Converter.physicsToFrame(camera.calculateX(x)));
+        drawableComponent.setY((int)Converter.physicsToFrame(camera.calculateY(y)));
     }
 
     private Entity createCameraman(World world, int x, int y) {
         Entity cameraman = new Entity();
 
         bodyDef.setPosition(Converter.frameToPhysics(x),Converter.frameToPhysics(y));
-        bodyDef.setType(BodyType.dynamicBody);
+        bodyDef.setType(BodyType.kinematicBody);
 
         Body cameramanBody = world.createBody(bodyDef);
 
@@ -183,15 +193,15 @@ public class GameScreen extends Screen {
         cameramanBody.setAwake(true);
 
         Shape cameramanShape = new CircleShape();
-        Log.d("CAMERAMAN", Converter.frameToPhysics(1) + "");
         cameramanShape.setRadius(Converter.frameToPhysics(1));
 
-        fixtureDef.setDensity(1);
         fixtureDef.setShape(cameramanShape);
 
         cameramanBody.createFixture(fixtureDef);
 
         PhysicsComponent cameramanPhysics = new PhysicsComponent(cameramanBody);
+
+        cameramanPhysics.setWidth(Converter.frameToPhysics(0.5f)).setHeight(Converter.frameToPhysics(0.5f));
 
         cameramanPhysics.applyLinearVelocity(WORLD_PROGRESS, 0);
 
@@ -229,6 +239,7 @@ public class GameScreen extends Screen {
 
         PhysicsComponent avatarPhysics = new PhysicsComponent(avatarBody);
 
+        avatarPhysics.setWidth(Converter.frameToPhysics(RADIUS_AVATAR/2)).setHeight(Converter.frameToPhysics(RADIUS_AVATAR/2));
         avatarPhysics.applyLinearVelocity(WORLD_PROGRESS, 0);
 
         avatar.addComponent(avatarPhysics);
