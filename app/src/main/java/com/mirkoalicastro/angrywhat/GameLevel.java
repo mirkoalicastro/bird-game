@@ -14,25 +14,45 @@ import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.RectangleDrawableComponent;
 import com.mirkoalicastro.angrywhat.utils.Converter;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class GameLevel {
+    private final int tolerance;
+    private int lastObstacleX;
     private final Graphics graphics;
     private final World world;
-    private final List<Entity> obstacles = new LinkedList<>();
     private final PolygonShape box = new PolygonShape();
     private final BodyDef bodyDef = new BodyDef();
+    private final MyList<Entity> obstacles = new MyList<>(new MyList.FullyRemover<Entity>() {
+        @Override
+        public void remove(Entity el) {
+            PhysicsComponent physicsComponent = (PhysicsComponent) el.getComponent(Component.Type.Phyisics);
+            if(physicsComponent != null)
+                physicsComponent.delete();
+        }
+    });
 
-    public GameLevel(World world, Graphics graphics) {
+    GameLevel(World world, Graphics graphics) {
         this.graphics = graphics;
         this.world = world;
-        addObstacle(500, 200);
+        lastObstacleX = graphics.getWidth()/2;
+        tolerance = graphics.getWidth() * LEVEL_PRECALCULATED_PERCENTAGE/100;
+    }
+
+    /* Non thread-safe for improving performance */
+    public void step(int currentX) {
+        while (currentX+tolerance > lastObstacleX) {
+            lastObstacleX += OBSTACLE_WIDTH + OBSTACLE_SPACE_BETWEEN;
+            addObstacle(lastObstacleX,randomEntrance());
+        }
     }
 
     /* Non thread-safe for improving perfomance */
-    public List<Entity> getObstacles() {
+    public Iterable<Entity> getObstacles() {
+        obstacles.resetIterator();
         return obstacles;
+    }
+
+    private int randomEntrance() {
+        return (int)(Math.random()*(graphics.getHeight()-(1.5*OBSTACLE_FREE_HEIGHT)));
     }
 
     private void addObstacle(int x, int y) {
@@ -77,7 +97,16 @@ public class GameLevel {
         obstacles.add(second);
     }
 
-    private final static int OBSTACLE_SPACE_BETWEEN = 300;
-    private final static int OBSTACLE_WIDTH = 120;
-    private final static int OBSTACLE_FREE_HEIGHT = 300;
+    void dispose() {
+        for(Entity obs: getObstacles()) {
+            PhysicsComponent physicsComponent = (PhysicsComponent) obs.getComponent(Component.Type.Phyisics);
+            if(physicsComponent != null)
+                physicsComponent.delete();
+        }
+    }
+
+    private final static int OBSTACLE_SPACE_BETWEEN = 350;
+    private final static int OBSTACLE_WIDTH = 125;
+    private final static int OBSTACLE_FREE_HEIGHT = 325;
+    private final static int LEVEL_PRECALCULATED_PERCENTAGE = 100;
 }
