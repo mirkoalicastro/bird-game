@@ -56,6 +56,7 @@ public class GameLevel {
         return (int)(Math.random()*(graphics.getHeight()-(1.5*OBSTACLE_FREE_HEIGHT)));
     }
 
+    //TODO does not work
     private void addObstacle(int x, int y) {
         Log.d("PROVA", "genero a " + y);
         Entity first = new Entity();
