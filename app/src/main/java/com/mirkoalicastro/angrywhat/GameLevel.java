@@ -14,6 +14,7 @@ import com.mirkoalicastro.angrywhat.gameobjects.Entity;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.RectangleDrawableComponent;
 import com.mirkoalicastro.angrywhat.utils.Converter;
+import com.mirkoalicastro.angrywhat.utils.IdGenerator;
 
 public class GameLevel {
     private final int tolerance;
@@ -30,12 +31,14 @@ public class GameLevel {
                 physicsComponent.delete();
         }
     });
+    private final IdGenerator idGenerator;
 
     GameLevel(World world, Graphics graphics) {
         this.graphics = graphics;
         this.world = world;
         lastObstacleX = graphics.getWidth()/2;
         tolerance = graphics.getWidth() * LEVEL_PRECALCULATED_PERCENTAGE/100;
+        idGenerator = IdGenerator.getInstance();
     }
 
     /* Non thread-safe for improving performance */
@@ -56,22 +59,19 @@ public class GameLevel {
         return (int)(Math.random()*(graphics.getHeight()-(1.5*OBSTACLE_FREE_HEIGHT)));
     }
 
-    //TODO does not work
     private void addObstacle(int x, int y) {
         Log.d("PROVA", "genero a " + y);
-        Entity first = new Entity();
-        Entity second = new Entity();
-        float h;
-
-        h = y;
+        int id = idGenerator.next();
+        Entity first = new Entity(id), second = new Entity(id);
+        float h = y;
         Component firstDrawable = new RectangleDrawableComponent(graphics).setWidth(OBSTACLE_WIDTH)
-                .setHeight((int)h).setPixmap(null).setColor(Color.GREEN);//.setX(x).setY(0);
+                .setHeight((int)h).setPixmap(null).setColor(Color.GREEN);
         first.addComponent(firstDrawable);
 
         box.setAsBox(Converter.frameToPhysics(OBSTACLE_WIDTH/2),
                 Converter.frameToPhysics(h/2));
 
-        bodyDef.setPosition(Converter.frameToPhysics(x),Converter.frameToPhysics(0));
+        bodyDef.setPosition(Converter.frameToPhysics(x+OBSTACLE_WIDTH/2),Converter.frameToPhysics(h/2));
         bodyDef.setType(BodyType.staticBody);
 
         Body firstBody = world.createBody(bodyDef);
@@ -84,21 +84,18 @@ public class GameLevel {
 
         first.addComponent(firstPhysicsComponent);
 
-
         obstacles.add(first);
-        if(true)
-            return;
 
-        float ys = y+OBSTACLE_FREE_HEIGHT;
-        h = graphics.getHeight()-ys;
+        y += OBSTACLE_FREE_HEIGHT;
+        h = graphics.getHeight()-y;
         Component secondDrawable = new RectangleDrawableComponent(graphics).setWidth(OBSTACLE_WIDTH)
-                .setHeight((int)h).setPixmap(null).setColor(Color.GREEN);//.setX(x).setY(y+OBSTACLE_FREE_HEIGHT);
+                .setHeight((int)h).setPixmap(null).setColor(Color.GREEN);
         second.addComponent(secondDrawable);
 
         box.setAsBox(Converter.frameToPhysics(OBSTACLE_WIDTH/2),
                 Converter.frameToPhysics(h/2));
 
-        bodyDef.setPosition(Converter.frameToPhysics(x),Converter.frameToPhysics(ys));
+        bodyDef.setPosition(Converter.frameToPhysics(x+OBSTACLE_WIDTH/2),Converter.frameToPhysics(y+h/2));
         bodyDef.setType(BodyType.staticBody);
 
         Body secondBody = world.createBody(bodyDef);
@@ -124,6 +121,7 @@ public class GameLevel {
 
     private final static int OBSTACLE_SPACE_BETWEEN = 350;
     private final static int OBSTACLE_WIDTH = 120;
-    private final static int OBSTACLE_FREE_HEIGHT = 120;//325;
+    private final static int OBSTACLE_FREE_HEIGHT = 325;
     private final static int LEVEL_PRECALCULATED_PERCENTAGE = 100;
+
 }
