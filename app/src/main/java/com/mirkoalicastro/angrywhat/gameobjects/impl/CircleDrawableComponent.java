@@ -1,9 +1,10 @@
 package com.mirkoalicastro.angrywhat.gameobjects.impl;
 
 import com.badlogic.androidgames.framework.Graphics;
+import com.badlogic.androidgames.framework.Pixmap;
 
 public class CircleDrawableComponent extends DrawableComponent {
-    private int radius;
+    protected int radius;
 
     public CircleDrawableComponent(Graphics graphics){ super(graphics); }
 
