@@ -7,6 +7,8 @@ import com.mirkoalicastro.angrywhat.gameobjects.impl.CircleDrawableComponent;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
 
 public class GameStatus {
+    private int score;
+    private int lastObstaclePassed;
     private final World world;
     private final Entity avatar;
     GameStatus(World world, Entity avatar) {
@@ -29,4 +31,14 @@ public class GameStatus {
         world.delete();
     }
 
+    public void updateScore(int obstaclePassed) {
+        if(obstaclePassed > lastObstaclePassed) {
+            score++;
+            lastObstaclePassed = obstaclePassed;
+        }
+    }
+
+    public int getScore() {
+        return score;
+    }
 }
