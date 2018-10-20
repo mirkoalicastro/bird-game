@@ -40,4 +40,6 @@ public interface Graphics {
     int getHeight();
 
     void drawPixmap(Pixmap pixmap, int x, int y, float degrees);
+
+    void drawPixmap(Pixmap pixmap, int x, int y, int width, int height, float degrees);
 }

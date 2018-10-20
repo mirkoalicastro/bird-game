@@ -203,9 +203,14 @@ public class AndroidGraphics implements Graphics {
 
     @Override
     public void drawPixmap(Pixmap pixmap, int x, int y, float degrees) {
+        drawPixmap(pixmap,x,y,pixmap.getWidth(), pixmap.getHeight(), degrees);
+    }
+
+    @Override
+    public void drawPixmap(Pixmap pixmap, int x, int y, int width, int height, float degrees) {
         canvas.save();
         canvas.rotate(degrees,x+(pixmap.getWidth()/2),y+(pixmap.getHeight()/2));
-        drawPixmap(pixmap, x, y);
+        drawPixmap(pixmap, x, y, width,height);
         canvas.restore();
     }
 
