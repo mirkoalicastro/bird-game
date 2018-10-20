@@ -1,11 +1,13 @@
 package com.mirkoalicastro.angrywhat;
 
 import android.graphics.Color;
+import android.graphics.Shader;
 
 import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.impl.AndroidGame;
 import com.badlogic.androidgames.framework.impl.LoadingScreen;
+import com.badlogic.androidgames.framework.impl.RectangularLinearGradientEffect;
 
 public class StartScreen extends LoadingScreen {
 
@@ -33,6 +35,7 @@ public class StartScreen extends LoadingScreen {
     public void update(float deltaTime) {
         Graphics g = game.getGraphics();
         Assets.avatar = g.newPixmap("avatar.png", Graphics.PixmapFormat.ARGB8888);
+        Assets.backgroundGradient = new RectangularLinearGradientEffect(0,0, 0, g.getHeight(), new int[]{BACKGROUND_TOP_COLOR, BACKGROUND_BOTTOM_COLOR}, new float[]{0,1}, Shader.TileMode.REPEAT);
         setProgress(100);
         game.setScreen(new GameScreen(game));
     }
@@ -51,5 +54,9 @@ public class StartScreen extends LoadingScreen {
     public void back() {
         ((AndroidGame)game).finish();
     }
+
+
+    private final static int BACKGROUND_TOP_COLOR = Color.parseColor("#E8FFFF");
+    private final static int BACKGROUND_BOTTOM_COLOR = Color.parseColor("#A8D5F4");
 
 }

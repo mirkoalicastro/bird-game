@@ -8,6 +8,6 @@ public class Assets {
     public static Pixmap[] skins;
     public static Pixmap avatar;
     public static Pixmap loading;
-    public static Effect backgroundTile;
+    public static Effect backgroundGradient;
     public static Sound click;
 }
