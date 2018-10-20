@@ -5,7 +5,6 @@ import com.badlogic.androidgames.framework.Graphics;
 public class RectangleDrawableComponent extends DrawableComponent {
     public RectangleDrawableComponent(Graphics graphics){ super(graphics); }
 
-    //TODO from center as circle or top-left?
     @Override
     public void draw() {
         if(strokeWidth > 0 && strokeColor != null)
