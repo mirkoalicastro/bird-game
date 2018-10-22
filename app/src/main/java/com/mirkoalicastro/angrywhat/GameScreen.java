@@ -2,7 +2,6 @@ package com.mirkoalicastro.angrywhat;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.util.Log;
 
 import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
@@ -13,6 +12,7 @@ import com.google.fpl.liquidfun.BodyDef;
 import com.google.fpl.liquidfun.BodyType;
 import com.google.fpl.liquidfun.CircleShape;
 import com.google.fpl.liquidfun.FixtureDef;
+import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Shape;
 import com.google.fpl.liquidfun.World;
 import com.mirkoalicastro.angrywhat.camera.Camera;
@@ -27,23 +27,33 @@ import com.mirkoalicastro.angrywhat.utils.IdGenerator;
 
 import java.util.Iterator;
 
+import mirkoalicastro.com.angrywhat.R;
+
 public class GameScreen extends Screen {
-    private final GameStatus gameStatus;
-    private final BodyDef bodyDef = new BodyDef();
-    private final FixtureDef fixtureDef = new FixtureDef();
+    private GameStatus gameStatus;
+    private BodyDef bodyDef;
+    private FixtureDef fixtureDef;
+    private PolygonShape box;
     private final Graphics graphics;
-    private final Camera camera;
-    private final GameLevel gameLevel;
+    private Camera camera;
+    private GameLevel gameLevel;
     private final IdGenerator idGenerator = IdGenerator.getInstance();
     private long jumpUntil;
     private long animationUntil;
-    private final Entity[] enclosures;
+    private Entity[] enclosures;
 
     GameScreen(Game game) {
         super(game);
         graphics = game.getGraphics();
         Converter.setScale(graphics.getWidth(), graphics.getHeight());
-        World world = new World(0, WORLD_GRAVITY);
+        allocate();
+    }
+
+    private void allocate() {
+        bodyDef = new BodyDef();
+        fixtureDef = new FixtureDef();
+        box = new PolygonShape();
+        World world = new World(0, WORLD_GRAVITY*FAST_FACTOR);
         Entity cameraman = createCameraman(world, (int)(graphics.getWidth()*RELATIVE_X_AVATAR), -50);
         Entity avatar = createAvatar(world, (int)(graphics.getWidth()*RELATIVE_X_AVATAR), (int)(graphics.getHeight()*RELATIVE_Y_AVATAR));
         enclosures = createEnclosure(world, graphics.getWidth(), graphics.getHeight());
@@ -52,36 +62,37 @@ public class GameScreen extends Screen {
         gameLevel = new GameLevel(world, graphics);
     }
 
-    private Entity[] createEnclosure(World world, int width, int height) {
-        int id = idGenerator.next();
-        Entity[] arr = new Entity[4];
-        for(int i=0; i<arr.length; i++)
-            arr[i] = new Entity(id);
-        //TODO create drawable and physics components
-        return arr;
-    }
-
     @Override
     public void update(float deltaTime) {
         boolean jump = false;
+        boolean isAlive = gameStatus.isAvatarAlive();
         PhysicsComponent avatarPhysics = (PhysicsComponent) gameStatus.getAvatar().getComponent(Component.Type.Phyisics);
         int absoluteAvatarX = (int)Converter.physicsToFrame(avatarPhysics.getX());
         DrawableComponent avatarDrawable = (DrawableComponent) gameStatus.getAvatar().getComponent(Component.Type.Drawable);
         long now = System.currentTimeMillis();
 
         for (Input.TouchEvent event: game.getInput().getTouchEvents()) {
-            if(event.type == Input.TouchEvent.TOUCH_UP) {
-//                if(menubutton.inBounds(event)) {
+            if (event.type == Input.TouchEvent.TOUCH_UP) {
+//                if (menubutton.inBounds(event)) {
 
 //                } else
-                jump = true;
-                ((CircleAnimationDrawableComponent) avatarDrawable).play();
+                if (isAlive) {
+                    jump = true;
+                    ((CircleAnimationDrawableComponent) avatarDrawable).play();
+                } else {
+                    allocate(); //TODO button
+                    return;
+                }
 
 //                }
             }
         }
+
+        if (!isAlive)
+            return;
+
         if (jump) {
-            if(now > jumpUntil)
+            if (now > jumpUntil)
                 stopGravity(gameStatus.getAvatar());
             animationUntil = now + ANIMATION_JUMP_DURATION;
             jumpUntil = now + JUMP_DURATION;
@@ -89,26 +100,14 @@ public class GameScreen extends Screen {
         if (now <= jumpUntil)
             jumpEntity(gameStatus.getAvatar());
 
-        if(now > animationUntil)
+        if (now > animationUntil)
             ((CircleAnimationDrawableComponent) avatarDrawable).stopAt(DEFAULT_FRAME_AVATAR);
 
         gameStatus.getWorld().step(deltaTime, VELOCITY_ITERATIONS, POSITION_ITERATIONS, 0);
         camera.step();
         gameLevel.step(absoluteAvatarX);
         updateEntityPosition(gameStatus.getAvatar());
-        Iterator<Entity> iterator = gameLevel.getObstacles().iterator();
-        while(iterator.hasNext()) {
-            Entity obs = iterator.next();
-            updateEntityPosition(obs, true);
-            DrawableComponent drawableComponent = (DrawableComponent) obs.getComponent(Component.Type.Drawable);
-            if((drawableComponent.getX()+drawableComponent.getWidth()) < avatarDrawable.getX()) {
-                gameStatus.updateScore(obs.getId());
-                if (drawableComponent.getX() < -drawableComponent.getWidth()) {
-                    iterator.remove();
-                    Log.d("PROVA", "rimosso");
-                }
-            }
-        }
+        updateScore();
     }
 
     @Override
@@ -120,7 +119,10 @@ public class GameScreen extends Screen {
             DrawableComponent obsDrawable = (DrawableComponent) obs.getComponent(Component.Type.Drawable);
             obsDrawable.draw();
         }
-        graphics.drawText("Score: " + gameStatus.getScore(),1700,100,45, Color.BLACK);
+        graphics.drawText(((Activity)game).getString(R.string.score) + gameStatus.getScore(),graphics.getWidth()-SCORE_RIGHT_MARGIN,SCORE_TOP_MARGIN,SCORE_FONT_SIZE, Color.BLACK, Graphics.TextAlign.RIGHT);
+        if (!gameStatus.isAvatarAlive()) {
+            graphics.drawText("HAI PERSO", 100, 100, 45, Color.BLACK, Graphics.TextAlign.CENTER);
+        }
     }
 
     @Override
@@ -135,7 +137,13 @@ public class GameScreen extends Screen {
 
     @Override
     public void dispose() {
+        for (Entity enclosure: enclosures)
+            ((PhysicsComponent) enclosure.getComponent(Component.Type.Phyisics)).delete();
+        bodyDef.delete();
+        fixtureDef.delete();
+        box.delete();
         gameLevel.dispose();
+        camera.dispose();
         gameStatus.dispose();
     }
 
@@ -144,11 +152,32 @@ public class GameScreen extends Screen {
         ((Activity)game).finish();
     }
 
+    private void updateScore() {
+        DrawableComponent avatarDrawable = (DrawableComponent) gameStatus.getAvatar().getComponent(Component.Type.Drawable);
+        if (avatarDrawable.getX()+avatarDrawable.getWidth()/2 < 0 ||
+                avatarDrawable.getY()-avatarDrawable.getHeight()/2 > graphics.getHeight()) {
+            gameStatus.gameOver();
+            return;
+        }
+        Iterator<Entity> iterator = gameLevel.getObstacles().iterator();
+        while (iterator.hasNext()) {
+            Entity obstacle = iterator.next();
+            updateEntityPosition(obstacle, true);
+            DrawableComponent drawableComponent = (DrawableComponent) obstacle.getComponent(Component.Type.Drawable);
+            if ((drawableComponent.getX()+drawableComponent.getWidth()) < avatarDrawable.getX()) {
+                gameStatus.updateScore(obstacle.getId());
+                if (drawableComponent.getX() < -drawableComponent.getWidth()) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
     private void stopGravity(Entity entity) {
         PhysicsComponent physicsComponent = (PhysicsComponent) entity.getComponent(Component.Type.Phyisics);
         if (physicsComponent == null)
             throw new IllegalArgumentException("Entity has not any physics component");
-        if(physicsComponent.getYVelocity() > 0)
+        if (physicsComponent.getYVelocity() > 0)
             physicsComponent.stopY();
     }
 
@@ -156,7 +185,7 @@ public class GameScreen extends Screen {
         PhysicsComponent physicsComponent = (PhysicsComponent) entity.getComponent(Component.Type.Phyisics);
         if (physicsComponent == null)
             throw new IllegalArgumentException("Entity has not any physics component");
-        physicsComponent.applyLinearVelocity(WORLD_PROGRESS,-JUMP_FORCE);
+        physicsComponent.applyLinearVelocity(WORLD_PROGRESS*FAST_FACTOR,-JUMP_FORCE*FAST_FACTOR);
     }
 
     private void updateEntityPosition(Entity entity) {
@@ -173,7 +202,7 @@ public class GameScreen extends Screen {
             throw new IllegalArgumentException("Entity has not any drawable component");
         float x = physicsComponent.getX();
         float y = physicsComponent.getY();
-        if(isCentered) {
+        if (isCentered) {
             x -= physicsComponent.getWidth()/2;
             y -= physicsComponent.getHeight()/2;
         }
@@ -204,7 +233,7 @@ public class GameScreen extends Screen {
 
         cameramanPhysics.setWidth(Converter.frameToPhysics(0.5f)).setHeight(Converter.frameToPhysics(0.5f));
 
-        cameramanPhysics.applyLinearVelocity(WORLD_PROGRESS, 0);
+        cameramanPhysics.applyLinearVelocity(WORLD_PROGRESS*FAST_FACTOR, 0);
 
         cameraman.addComponent(cameramanPhysics);
 
@@ -242,21 +271,52 @@ public class GameScreen extends Screen {
         PhysicsComponent avatarPhysics = new PhysicsComponent(avatarBody);
 
         avatarPhysics.setWidth(Converter.frameToPhysics(PHYSICS_RADIUS_AVATAR /2)).setHeight(Converter.frameToPhysics(PHYSICS_RADIUS_AVATAR /2));
-        avatarPhysics.applyLinearVelocity(WORLD_PROGRESS, 0);
+        avatarPhysics.applyLinearVelocity(WORLD_PROGRESS*FAST_FACTOR, 0);
 
         avatar.addComponent(avatarPhysics);
 
         return avatar;
     }
 
-    private final static int ANIMATION_JUMP_VELOCITY = 80;
+    private Entity[] createEnclosure(World world, int width, int height) {
+        int id = idGenerator.next();
+        Entity[] ret = new Entity[2];
+        ret[0] = createLinearMovingBox(world, id,0,0, width,1,WORLD_PROGRESS*FAST_FACTOR,0);
+        ret[1] = createLinearMovingBox(world, id, width,0,1, height,WORLD_PROGRESS*FAST_FACTOR,0);
+        return ret;
+    }
+
+    private Entity createLinearMovingBox(World world, int entityId, int x, int y, int width, int height, float xLinearVelocity, float yLinearVelocity) {
+        Entity entity = new Entity(entityId);
+
+        box.setAsBox(Converter.frameToPhysics(width/2), Converter.frameToPhysics(height/2));
+
+        bodyDef.setPosition(Converter.frameToPhysics(x+width/2),Converter.frameToPhysics(y+height/2));
+        bodyDef.setType(BodyType.kinematicBody);
+
+        Body body = world.createBody(bodyDef);
+
+        body.setUserData(entity);
+        body.createFixture(box,0);
+
+        PhysicsComponent physicsComponent = new PhysicsComponent(body);
+        physicsComponent.setWidth(Converter.frameToPhysics(width)).setHeight(Converter.frameToPhysics(height));
+
+        physicsComponent.applyLinearVelocity(xLinearVelocity, yLinearVelocity);
+
+        entity.addComponent(physicsComponent);
+
+        return entity;
+    }
+
+    private final static int ANIMATION_JUMP_VELOCITY = 75;
     private final static long ANIMATION_JUMP_DURATION = 300;
     private final static int DEFAULT_FRAME_AVATAR = 1;
 
     private final static int PHYSICS_RADIUS_AVATAR = 55;
     private final static int DRAWABLE_RADIUS_AVATAR = 60;
 
-    private final static long JUMP_DURATION = 80;
+    private final static long JUMP_DURATION = 50;
     private final static float JUMP_FORCE = 2.3f;
 
     private final static float RELATIVE_X_AVATAR = 0.2f;
@@ -266,5 +326,9 @@ public class GameScreen extends Screen {
     private final static float WORLD_PROGRESS = 1.5f;
     private final static int VELOCITY_ITERATIONS = 8;
     private final static int POSITION_ITERATIONS = 3;
+    private final static float FAST_FACTOR = 1.2f;
 
+    private final static int SCORE_RIGHT_MARGIN = 100;
+    private final static int SCORE_TOP_MARGIN = 100;
+    private final static int SCORE_FONT_SIZE = 50;
 }
