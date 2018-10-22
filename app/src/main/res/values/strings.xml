@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AngryWhat</string>
+    <string name="score">Score:</string>
 </resources>
