@@ -36,4 +36,13 @@ public class ScrollingAbscissaCamera extends Camera {
         return y;
     }
 
+    @Override
+    public void dispose() {
+        PhysicsComponent physicsComponent = (PhysicsComponent) entity.getComponent(Component.Type.Phyisics);
+        physicsComponent.delete();
+    }
+
+    public Entity getCameraman() {
+        return entity;
+    }
 }

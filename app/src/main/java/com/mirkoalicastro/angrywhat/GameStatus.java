@@ -11,6 +11,7 @@ public class GameStatus {
     private int lastObstaclePassed;
     private final World world;
     private final Entity avatar;
+    private boolean isAlive = true;
     GameStatus(World world, Entity avatar) {
         this.world = world;
         this.avatar = avatar;
@@ -32,7 +33,7 @@ public class GameStatus {
     }
 
     public void updateScore(int obstaclePassed) {
-        if(obstaclePassed > lastObstaclePassed) {
+        if(isAlive && obstaclePassed > lastObstaclePassed) {
             score++;
             lastObstaclePassed = obstaclePassed;
         }
@@ -40,5 +41,13 @@ public class GameStatus {
 
     public int getScore() {
         return score;
+    }
+
+    public void gameOver() {
+        isAlive = false;
+    }
+
+    public boolean isAvatarAlive() {
+        return isAlive;
     }
 }

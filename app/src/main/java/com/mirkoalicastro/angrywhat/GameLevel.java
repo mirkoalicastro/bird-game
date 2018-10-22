@@ -16,6 +16,8 @@ import com.mirkoalicastro.angrywhat.gameobjects.impl.RectangleDrawableComponent;
 import com.mirkoalicastro.angrywhat.utils.Converter;
 import com.mirkoalicastro.angrywhat.utils.IdGenerator;
 
+import java.util.Iterator;
+
 public class GameLevel {
     private final int tolerance;
     private int lastObstacleX;
@@ -56,11 +58,10 @@ public class GameLevel {
     }
 
     private int randomEntrance() {
-        return (int)(Math.random()*(graphics.getHeight()-(1.5*OBSTACLE_FREE_HEIGHT)));
+        return (int)(Math.random()*((OBSTACLE_TO-OBSTACLE_FROM-OBSTACLE_FREE_HEIGHT)) + OBSTACLE_FROM);
     }
 
     private void addObstacle(int x, int y) {
-        Log.d("PROVA", "genero a " + y);
         int id = idGenerator.next();
         Entity first = new Entity(id), second = new Entity(id);
         float h = y;
@@ -112,16 +113,18 @@ public class GameLevel {
     }
 
     void dispose() {
-        for(Entity obs: getObstacles()) {
-            PhysicsComponent physicsComponent = (PhysicsComponent) obs.getComponent(Component.Type.Phyisics);
-            if(physicsComponent != null)
-                physicsComponent.delete();
+        Iterator<Entity> iterator = getObstacles().iterator();
+        while (iterator.hasNext()) {
+            Entity obstacle = iterator.next();
+            iterator.remove();
         }
     }
 
+    private final static float OBSTACLE_FROM = 150;
+    private final static float OBSTACLE_TO = 1080-150;
     private final static int OBSTACLE_SPACE_BETWEEN = 350;
     private final static int OBSTACLE_WIDTH = 120;
-    private final static int OBSTACLE_FREE_HEIGHT = 325;
+    private final static int OBSTACLE_FREE_HEIGHT = 360;
     private final static int LEVEL_PRECALCULATED_PERCENTAGE = 100;
 
 }

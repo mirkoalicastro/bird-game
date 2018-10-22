@@ -19,4 +19,5 @@ public abstract class Camera {
     public abstract void step();
     public abstract float calculateX(float x);
     public abstract float calculateY(float y);
+    public abstract void dispose();
 }
