@@ -185,9 +185,20 @@ public class AndroidGraphics implements Graphics {
     }
 
     @Override
-    public void drawText(String text, int x, int y, int fontSize, int color) {
+    public void drawText(String text, int x, int y, int fontSize, int color, TextAlign align) {
         paint.setTextSize(fontSize);
         paint.setColor(color);
+        switch (align) {
+            case LEFT:
+                paint.setTextAlign(Paint.Align.LEFT);
+                break;
+            case CENTER:
+                paint.setTextAlign(Paint.Align.CENTER);
+                break;
+            case RIGHT:
+                paint.setTextAlign(Paint.Align.RIGHT);
+                break;
+        }
         canvas.drawText(text, x, y, paint);
     }
 

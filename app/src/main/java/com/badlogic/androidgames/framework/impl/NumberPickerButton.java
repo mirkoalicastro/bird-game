@@ -130,7 +130,7 @@ public class NumberPickerButton extends AndroidRectangularButton {
             minusButton.draw();
         if(value +steps <= max)
             plusButton.draw();
-        graphics.drawText(String.valueOf(value),x+100+FONT_SIZE,y+66,FONT_SIZE,fontColor);
+        graphics.drawText(String.valueOf(value),x+100+FONT_SIZE,y+66,FONT_SIZE,fontColor,Graphics.TextAlign.LEFT);
     }
 
     /**

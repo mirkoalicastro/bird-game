@@ -4,6 +4,9 @@ public interface Graphics {
     enum PixmapFormat {
         ARGB8888, ARGB4444, RGB565
     }
+    enum TextAlign {
+        LEFT, CENTER, RIGHT
+    }
 
     Pixmap[] newPixmapsFromFolder(String path, PixmapFormat format);
 
@@ -33,7 +36,7 @@ public interface Graphics {
 
     void drawEffect(Effect effect, int x, int y, int width, int height);
 
-    void drawText(String text, int x, int y, int fontSize, int color);
+    void drawText(String text, int x, int y, int fontSize, int color, TextAlign align);
 
     int getWidth();
 
