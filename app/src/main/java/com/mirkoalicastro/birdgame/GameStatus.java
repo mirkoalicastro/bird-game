@@ -1,10 +1,10 @@
-package com.mirkoalicastro.angrywhat;
+package com.mirkoalicastro.birdgame;
 
 import com.google.fpl.liquidfun.World;
-import com.mirkoalicastro.angrywhat.gameobjects.Component;
-import com.mirkoalicastro.angrywhat.gameobjects.Entity;
-import com.mirkoalicastro.angrywhat.gameobjects.impl.CircleDrawableComponent;
-import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
+import com.mirkoalicastro.birdgame.gameobjects.Component;
+import com.mirkoalicastro.birdgame.gameobjects.Entity;
+import com.mirkoalicastro.birdgame.gameobjects.impl.CircleDrawableComponent;
+import com.mirkoalicastro.birdgame.gameobjects.impl.PhysicsComponent;
 
 public class GameStatus {
     private int score;

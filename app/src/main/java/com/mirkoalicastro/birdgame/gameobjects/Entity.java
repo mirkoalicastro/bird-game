@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat.gameobjects;
+package com.mirkoalicastro.birdgame.gameobjects;
 
 import java.util.EnumMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat;
+package com.mirkoalicastro.birdgame;
 
 import android.support.annotation.NonNull;
 

@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat;
+package com.mirkoalicastro.birdgame;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -16,16 +16,16 @@ import com.google.fpl.liquidfun.FixtureDef;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Shape;
 import com.google.fpl.liquidfun.World;
-import com.mirkoalicastro.angrywhat.camera.Camera;
-import com.mirkoalicastro.angrywhat.camera.impl.ScrollingAbscissaCamera;
-import com.mirkoalicastro.angrywhat.gameobjects.Component;
-import com.mirkoalicastro.angrywhat.gameobjects.Entity;
-import com.mirkoalicastro.angrywhat.gameobjects.impl.CircleAnimationDrawableComponent;
-import com.mirkoalicastro.angrywhat.gameobjects.impl.DrawableComponent;
-import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
-import com.mirkoalicastro.angrywhat.physics.Converter;
-import com.mirkoalicastro.angrywhat.physics.MyContactListener;
-import com.mirkoalicastro.angrywhat.utils.IdGenerator;
+import com.mirkoalicastro.birdgame.camera.Camera;
+import com.mirkoalicastro.birdgame.camera.impl.ScrollingAbscissaCamera;
+import com.mirkoalicastro.birdgame.gameobjects.Component;
+import com.mirkoalicastro.birdgame.gameobjects.Entity;
+import com.mirkoalicastro.birdgame.gameobjects.impl.CircleAnimationDrawableComponent;
+import com.mirkoalicastro.birdgame.gameobjects.impl.DrawableComponent;
+import com.mirkoalicastro.birdgame.gameobjects.impl.PhysicsComponent;
+import com.mirkoalicastro.birdgame.physics.Converter;
+import com.mirkoalicastro.birdgame.physics.MyContactListener;
+import com.mirkoalicastro.birdgame.utils.IdGenerator;
 
 import java.util.Iterator;
 

@@ -1,10 +1,10 @@
-package com.mirkoalicastro.angrywhat.gameobjects.impl;
+package com.mirkoalicastro.birdgame.gameobjects.impl;
 
 import android.util.Log;
 
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.Vec2;
-import com.mirkoalicastro.angrywhat.gameobjects.Component;
+import com.mirkoalicastro.birdgame.gameobjects.Component;
 
 public class PhysicsComponent extends Component {
     private Body body;

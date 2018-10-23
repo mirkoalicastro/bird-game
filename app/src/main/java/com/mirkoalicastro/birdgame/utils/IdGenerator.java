@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat.utils;
+package com.mirkoalicastro.birdgame.utils;
 
 public class IdGenerator {
     private static final int DEFAULT_START = 0;

@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat;
+package com.mirkoalicastro.birdgame;
 
 import com.badlogic.androidgames.framework.Graphics;
 import com.google.fpl.liquidfun.Body;
@@ -6,12 +6,12 @@ import com.google.fpl.liquidfun.BodyDef;
 import com.google.fpl.liquidfun.BodyType;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.World;
-import com.mirkoalicastro.angrywhat.gameobjects.Component;
-import com.mirkoalicastro.angrywhat.gameobjects.Entity;
-import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
-import com.mirkoalicastro.angrywhat.gameobjects.impl.RectangleDrawableComponent;
-import com.mirkoalicastro.angrywhat.physics.Converter;
-import com.mirkoalicastro.angrywhat.utils.IdGenerator;
+import com.mirkoalicastro.birdgame.gameobjects.Component;
+import com.mirkoalicastro.birdgame.gameobjects.Entity;
+import com.mirkoalicastro.birdgame.gameobjects.impl.PhysicsComponent;
+import com.mirkoalicastro.birdgame.gameobjects.impl.RectangleDrawableComponent;
+import com.mirkoalicastro.birdgame.physics.Converter;
+import com.mirkoalicastro.birdgame.utils.IdGenerator;
 
 import java.util.Iterator;
 

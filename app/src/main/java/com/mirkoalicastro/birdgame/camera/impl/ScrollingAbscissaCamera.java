@@ -1,9 +1,9 @@
-package com.mirkoalicastro.angrywhat.camera.impl;
+package com.mirkoalicastro.birdgame.camera.impl;
 
-import com.mirkoalicastro.angrywhat.camera.Camera;
-import com.mirkoalicastro.angrywhat.gameobjects.Component;
-import com.mirkoalicastro.angrywhat.gameobjects.Entity;
-import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
+import com.mirkoalicastro.birdgame.camera.Camera;
+import com.mirkoalicastro.birdgame.gameobjects.Component;
+import com.mirkoalicastro.birdgame.gameobjects.Entity;
+import com.mirkoalicastro.birdgame.gameobjects.impl.PhysicsComponent;
 
 public class ScrollingAbscissaCamera extends Camera {
     private final Entity entity;

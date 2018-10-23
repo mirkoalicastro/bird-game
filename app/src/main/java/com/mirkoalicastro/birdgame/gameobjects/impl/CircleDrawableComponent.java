@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat.gameobjects.impl;
+package com.mirkoalicastro.birdgame.gameobjects.impl;
 
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Pixmap;

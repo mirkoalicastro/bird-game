@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat.gameobjects;
+package com.mirkoalicastro.birdgame.gameobjects;
 
 public abstract class Component {
     public abstract Type type();

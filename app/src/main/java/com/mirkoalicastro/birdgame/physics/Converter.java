@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat.physics;
+package com.mirkoalicastro.birdgame.physics;
 
 public class Converter {
     private static final float PHYSIC_HEIGHT = 15;

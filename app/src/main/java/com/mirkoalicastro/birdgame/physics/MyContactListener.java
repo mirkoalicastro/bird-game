@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat.physics;
+package com.mirkoalicastro.birdgame.physics;
 
 import com.google.fpl.liquidfun.Contact;
 import com.google.fpl.liquidfun.ContactListener;

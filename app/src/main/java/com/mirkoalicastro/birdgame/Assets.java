@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat;
+package com.mirkoalicastro.birdgame;
 
 import com.badlogic.androidgames.framework.Effect;
 import com.badlogic.androidgames.framework.Pixmap;

@@ -1,4 +1,4 @@
-package com.mirkoalicastro.angrywhat.camera;
+package com.mirkoalicastro.birdgame.camera;
 
 public abstract class Camera {
     protected final int width, height;

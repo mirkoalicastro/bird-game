@@ -1,9 +1,9 @@
-package com.mirkoalicastro.angrywhat.gameobjects.impl;
+package com.mirkoalicastro.birdgame.gameobjects.impl;
 
 import com.badlogic.androidgames.framework.Effect;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Pixmap;
-import com.mirkoalicastro.angrywhat.gameobjects.Component;
+import com.mirkoalicastro.birdgame.gameobjects.Component;
 
 public abstract class DrawableComponent extends Component {
     protected final Graphics graphics;
