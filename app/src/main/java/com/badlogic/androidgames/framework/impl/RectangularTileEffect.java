@@ -3,16 +3,16 @@ package com.badlogic.androidgames.framework.impl;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-public class CircularAndroidTileEffect extends AndroidTileEffect {
+public class RectangularTileEffect extends AndroidTileEffect {
 
-    public CircularAndroidTileEffect(AndroidPixmap pixmap) {
+    public RectangularTileEffect(AndroidPixmap pixmap) {
         super(pixmap);
     }
 
     @Override
     void apply(Canvas canvas, Paint paint, int x, int y, int width, int height) {
         paint.setShader(shader);
-        canvas.drawCircle(x, y, width/2, paint);
+        canvas.drawRect(x, y, x + width, y + height, paint);
         paint.setShader(null);
     }
 }
