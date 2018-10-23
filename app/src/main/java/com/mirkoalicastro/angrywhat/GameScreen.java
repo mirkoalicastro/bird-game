@@ -11,6 +11,7 @@ import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
 import com.google.fpl.liquidfun.BodyType;
 import com.google.fpl.liquidfun.CircleShape;
+import com.google.fpl.liquidfun.ContactListener;
 import com.google.fpl.liquidfun.FixtureDef;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Shape;
@@ -22,7 +23,8 @@ import com.mirkoalicastro.angrywhat.gameobjects.Entity;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.CircleAnimationDrawableComponent;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.DrawableComponent;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
-import com.mirkoalicastro.angrywhat.utils.Converter;
+import com.mirkoalicastro.angrywhat.physics.Converter;
+import com.mirkoalicastro.angrywhat.physics.MyContactListener;
 import com.mirkoalicastro.angrywhat.utils.IdGenerator;
 
 import java.util.Iterator;
@@ -41,6 +43,7 @@ public class GameScreen extends Screen {
     private long jumpUntil;
     private long animationUntil;
     private Entity[] enclosures;
+    private ContactListener contactListener;
 
     GameScreen(Game game) {
         super(game);
@@ -53,7 +56,9 @@ public class GameScreen extends Screen {
         bodyDef = new BodyDef();
         fixtureDef = new FixtureDef();
         box = new PolygonShape();
+        contactListener = new MyContactListener();
         World world = new World(0, WORLD_GRAVITY*FAST_FACTOR);
+        world.setContactListener(contactListener);
         Entity cameraman = createCameraman(world, (int)(graphics.getWidth()*RELATIVE_X_AVATAR), -50);
         Entity avatar = createAvatar(world, (int)(graphics.getWidth()*RELATIVE_X_AVATAR), (int)(graphics.getHeight()*RELATIVE_Y_AVATAR));
         enclosures = createEnclosure(world, graphics.getWidth(), graphics.getHeight());
@@ -142,6 +147,7 @@ public class GameScreen extends Screen {
         bodyDef.delete();
         fixtureDef.delete();
         box.delete();
+        contactListener.delete();
         gameLevel.dispose();
         camera.dispose();
         gameStatus.dispose();
