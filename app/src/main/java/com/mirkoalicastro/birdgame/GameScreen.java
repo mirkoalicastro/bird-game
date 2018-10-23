@@ -29,7 +29,7 @@ import com.mirkoalicastro.birdgame.utils.IdGenerator;
 
 import java.util.Iterator;
 
-import mirkoalicastro.com.angrywhat.R;
+import mirkoalicastro.com.birdgame.R;
 
 public class GameScreen extends Screen {
     private GameStatus gameStatus;
