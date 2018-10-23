@@ -1,8 +1,5 @@
 package com.mirkoalicastro.angrywhat;
 
-import android.graphics.Color;
-import android.util.Log;
-
 import com.badlogic.androidgames.framework.Graphics;
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
@@ -13,7 +10,7 @@ import com.mirkoalicastro.angrywhat.gameobjects.Component;
 import com.mirkoalicastro.angrywhat.gameobjects.Entity;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.PhysicsComponent;
 import com.mirkoalicastro.angrywhat.gameobjects.impl.RectangleDrawableComponent;
-import com.mirkoalicastro.angrywhat.utils.Converter;
+import com.mirkoalicastro.angrywhat.physics.Converter;
 import com.mirkoalicastro.angrywhat.utils.IdGenerator;
 
 import java.util.Iterator;
@@ -66,7 +63,7 @@ public class GameLevel {
         Entity first = new Entity(id), second = new Entity(id);
         float h = y;
         Component firstDrawable = new RectangleDrawableComponent(graphics).setWidth(OBSTACLE_WIDTH)
-                .setHeight((int)h).setPixmap(null).setColor(Color.GREEN);
+                .setHeight((int)h).setPixmap(null).setEffect(Assets.obstacleTile);
         first.addComponent(firstDrawable);
 
         box.setAsBox(Converter.frameToPhysics(OBSTACLE_WIDTH/2),
@@ -90,7 +87,7 @@ public class GameLevel {
         y += OBSTACLE_FREE_HEIGHT;
         h = graphics.getHeight()-y;
         Component secondDrawable = new RectangleDrawableComponent(graphics).setWidth(OBSTACLE_WIDTH)
-                .setHeight((int)h).setPixmap(null).setColor(Color.GREEN);
+                .setHeight((int)h).setPixmap(null).setEffect(Assets.obstacleTile);
         second.addComponent(secondDrawable);
 
         box.setAsBox(Converter.frameToPhysics(OBSTACLE_WIDTH/2),

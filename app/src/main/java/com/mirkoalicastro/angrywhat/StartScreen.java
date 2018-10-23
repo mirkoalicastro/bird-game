@@ -6,7 +6,9 @@ import android.graphics.Shader;
 import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.impl.AndroidGame;
+import com.badlogic.androidgames.framework.impl.AndroidPixmap;
 import com.badlogic.androidgames.framework.impl.LoadingScreen;
+import com.badlogic.androidgames.framework.impl.RectangularTileEffect;
 import com.badlogic.androidgames.framework.impl.RectangularLinearGradientEffect;
 
 public class StartScreen extends LoadingScreen {
@@ -33,9 +35,11 @@ public class StartScreen extends LoadingScreen {
 
     @Override
     public void update(float deltaTime) {
-        Graphics g = game.getGraphics();
-        Assets.avatar = g.newPixmap("avatar.png", Graphics.PixmapFormat.ARGB8888);
-        Assets.backgroundGradient = new RectangularLinearGradientEffect(0,0, 0, g.getHeight(), new int[]{BACKGROUND_TOP_COLOR, BACKGROUND_BOTTOM_COLOR}, new float[]{0,1}, Shader.TileMode.REPEAT);
+        Graphics graphics = game.getGraphics();
+        Assets.avatar = graphics.newPixmap("avatar.png", Graphics.PixmapFormat.ARGB8888);
+        Assets.backgroundGradient = new RectangularLinearGradientEffect(0,0, 0, graphics.getHeight(), new int[]{BACKGROUND_TOP_COLOR, BACKGROUND_BOTTOM_COLOR}, new float[]{0,1}, Shader.TileMode.REPEAT);
+        Assets.obstacle = graphics.newPixmap("obstacle.png", Graphics.PixmapFormat.ARGB8888);
+        Assets.obstacleTile = new RectangularTileEffect((AndroidPixmap)Assets.obstacle);
         setProgress(100);
         game.setScreen(new GameScreen(game));
     }
