@@ -3,5 +3,5 @@
 
 *Bird game* features an endless level in which the goal is to survive for the maximum time as possible.
 
-## Screenshots
+## Screenshot
 ![alt text](https://raw.githubusercontent.com/mirkoalicastro/bird-game/master/demo/2.png)
